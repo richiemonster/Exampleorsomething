@@ -1,0 +1,170 @@
+package exercise1;
+
+import java.awt.Color;
+import java.util.Random;
+
+import greenfoot.GreenfootImage;
+import greenfoot.World;
+
+public class TrafficWorld extends World {
+	public static final int WIDTH = 1000;
+	public static final int HEIGHT = 750;
+	public static final int CELL_SIZE = 1;
+	public Road[] road = new Road[12];
+	public int roadWidth = 500;
+	public int roadLength = 75;
+	public Car[] car = new Car[34];
+	public Intersections[] intersection= new Intersections[35];
+	public int intersectionLength = 75;
+	public int intersectionWidth = 50;
+	public Road[] horizontal = new Road[5];
+	public Road[] vertical = new Road[7];
+	
+	Random romanoff = new Random();
+	int num;
+	
+	public TrafficWorld(){
+		super(WIDTH, HEIGHT, CELL_SIZE);
+		GreenfootImage background = this.getBackground();
+		
+		background.setColor(Color.GREEN);
+		background.fill();
+		
+		everythingThatHasToDoWithRoads();
+		everythingThatHasToDoWithIntersections();
+		everythingThatHasToDoWithCars();
+	}
+	
+	public void everythingThatHasToDoWithRoads(){
+		createRoads();
+		
+		placeHorizontalRows();
+		
+		resetToNewWidthAndLength();
+		
+		placeVerticalRows();
+	}
+	
+	public void everythingThatHasToDoWithCars(){
+		createCars();
+		
+		resetToDefault();
+		
+		carsHeadedEast();
+		
+		resetToDefault();
+		
+		carsHeadedWest();
+		
+		resetToNewWidthAndLength();
+		
+		carsHeadedSouth();
+		
+		resetToNewWidthAndLength();
+		
+		carsHeadedNorth();
+	}
+	
+	public void everythingThatHasToDoWithIntersections(){
+		createIntersection();
+		
+		placeIntersections();
+	}
+	
+	public void resetToNewWidthAndLength(){
+		roadWidth = 50;
+		roadLength = 500;
+	}
+	
+	public void resetToDefault(){
+		roadWidth = 500;
+		roadLength = 75;
+	}
+	
+	public void resetXIntersection(){
+		intersectionWidth = 50;
+	}
+	
+	public void placeHorizontalRows(){
+		for(int i = 0; i < 5; i++){
+			horizontal[i] = road[i];
+			this.addObject(horizontal[i], roadWidth, roadLength);
+				roadLength+= 150;
+		}
+	}
+	
+	public void placeVerticalRows(){
+		int j = 0;
+		for(int i = 5; i < 12; i++){
+			road[i].setRotation(90);
+			vertical[j] = road[i];
+			this.addObject(vertical[j], roadWidth, roadLength);
+			j++;
+			roadWidth+= 150;
+		}
+	}
+	
+	public void createRoads(){
+		for(int i = 0; i < road.length; i++){
+			road[i] = new Road();
+		}
+	}
+	
+	public void createCars(){
+		for(int i = 0; i < car.length; i++){
+			num = romanoff.nextInt(4)+1;
+			car[i] = new Car(num);
+		}
+	}
+	
+	public void carsHeadedEast(){
+		for(int i = 0; i < 5; i++){
+			num = romanoff.nextInt(100) + 1;
+			this.addObject(car[i], roadWidth + num, roadLength+15);
+			roadLength+=150;
+		}
+	}
+	
+	public void carsHeadedWest(){
+		for(int i = 5; i < 10; i++){
+			num = romanoff.nextInt(300) + 1;
+			car[i].setRotation(180);
+			this.addObject(car[i], roadWidth, roadLength-15);
+			roadLength+=150;
+		}
+	}
+	
+	public void carsHeadedSouth(){
+		for(int i = 10; i < 17; i++){
+			num = romanoff.nextInt(100) + 1;
+			car[i].setRotation(90);
+			this.addObject(car[i], roadWidth+15, roadLength + num);
+			roadWidth+= 150;
+		}
+	}
+	
+	public void carsHeadedNorth(){
+		for(int i = 17; i < 24; i++){
+			num = romanoff.nextInt(300) + 1;
+			car[i].setRotation(270);
+			this.addObject(car[i], roadWidth-15, roadLength + num);
+			roadWidth+= 150;
+		}
+	}
+	
+	public void createIntersection(){
+		for(int i = 0; i < intersection.length; i++){
+			intersection[i] = new Intersections();
+		}
+	}
+	
+	public void placeIntersections(){
+		for(int i = 0; i < horizontal.length; i++){
+			for(int j = 0; j < vertical.length; j++){
+				int intersectionNumber = (i*vertical.length)+j;
+				this.addObject(intersection[intersectionNumber], vertical[j].getX(), horizontal[i].getY());
+				intersection[intersectionNumber].addLights();
+			}
+		}
+	}
+}

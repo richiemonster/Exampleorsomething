@@ -1,0 +1,54 @@
+package exercise1;
+
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
+public class TrafficLight extends Actor{
+	private String[] colorImages ={"images\\trafficLightGreen.png",
+									"images\\trafficLightYellow.png",
+									"images\\trafficLightRed.png"};
+	private static final int greenCounter = 100;
+	private static final int yellowCounter = 50;
+	private static final int redCounter = 100;
+	private int lightCounter = 0;
+	private State verticalColor = State.GREEN;
+	GreenfootImage trafficLight;
+
+	public TrafficLight(State initialColor){
+		initialColor.ordinal();
+		trafficLight = new GreenfootImage(colorImages[initialColor.ordinal()]);
+		setImage(trafficLight);
+	}
+	
+	public void setColorImage(State newColor){
+		setImage(colorImages[newColor.ordinal()]);
+	}
+	
+	public void act(){
+		lightCounter++;
+		switch(verticalColor){
+		case GREEN:
+			if(lightCounter == greenCounter){
+				verticalColor = State.YELLOW;
+				setColorImage(verticalColor);
+				lightCounter = 0;
+			}
+			break;
+		case YELLOW:
+			if(lightCounter == yellowCounter){
+				verticalColor = State.RED;
+				setColorImage(verticalColor);
+				lightCounter = 0;
+			}
+			break;
+		case RED:
+			if(lightCounter == redCounter){
+				verticalColor = State.GREEN;
+				setColorImage(verticalColor);
+				lightCounter = 0;
+			}
+			break;
+		}
+	
+}
+}
