@@ -14,7 +14,7 @@ public class TrafficWorld extends World {
 	public int roadWidth = 500;
 	public int roadLength = 75;
 	public Car[] car = new Car[34];
-	public Intersections[] intersection= new Intersections[35];
+	public IntersectionObject[] intersection= new IntersectionObject[35];
 	public int intersectionLength = 75;
 	public int intersectionWidth = 50;
 	public Road[] horizontal = new Road[5];
@@ -121,6 +121,7 @@ public class TrafficWorld extends World {
 		for(int i = 0; i < 5; i++){
 			num = romanoff.nextInt(100) + 1;
 			this.addObject(car[i], roadWidth + num, roadLength+15);
+			car[i].setDirection(Direction.EAST);
 			roadLength+=150;
 		}
 	}
@@ -130,6 +131,7 @@ public class TrafficWorld extends World {
 			num = romanoff.nextInt(300) + 1;
 			car[i].setRotation(180);
 			this.addObject(car[i], roadWidth, roadLength-15);
+			car[i].setDirection(Direction.WEST);
 			roadLength+=150;
 		}
 	}
@@ -139,6 +141,7 @@ public class TrafficWorld extends World {
 			num = romanoff.nextInt(100) + 1;
 			car[i].setRotation(90);
 			this.addObject(car[i], roadWidth+15, roadLength + num);
+			car[i].setDirection(Direction.SOUTH);
 			roadWidth+= 150;
 		}
 	}
@@ -148,13 +151,14 @@ public class TrafficWorld extends World {
 			num = romanoff.nextInt(300) + 1;
 			car[i].setRotation(270);
 			this.addObject(car[i], roadWidth-15, roadLength + num);
+			car[i].setDirection(Direction.NORTH);
 			roadWidth+= 150;
 		}
 	}
 	
 	public void createIntersection(){
 		for(int i = 0; i < intersection.length; i++){
-			intersection[i] = new Intersections();
+			intersection[i] = new IntersectionObject();
 		}
 	}
 	
