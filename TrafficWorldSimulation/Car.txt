@@ -9,6 +9,7 @@ public class Car extends Actor {
 	private String[] carImages = {"images\\topCarBlue.png", "images\\topCarPurple.png",
 								"images\\topCarRed.png", "images\\topCarYellow.png"};
 	Random romanoff = new Random();
+	private Direction direction;
 	
 	public Car(int num){
 		GreenfootImage image = null;
@@ -36,6 +37,14 @@ public class Car extends Actor {
 				
 		}
 		
+	}
+	
+	public void setDirection(Direction d){
+		direction = d;
+	}
+	
+	public Direction getDirection(){
+		return direction;
 	}
 
 }
