@@ -1,15 +1,17 @@
 package exercise1;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import greenfoot.Actor;
 import greenfoot.GreenfootImage;
 
-public class Intersections extends Actor{
+public class IntersectionObject extends Actor implements Intersection{
 	private TrafficLight[] trafficLight = new TrafficLight[4];
 	public int roadWidth = 50;
+	ArrayList <IntersectionListener> listeners = new ArrayList <IntersectionListener>();
 	
-	public Intersections(){
+	public IntersectionObject(){
 		GreenfootImage intersection = new GreenfootImage(roadWidth, roadWidth);
 		intersection.setColor(Color.GRAY);
 		intersection.fill();
@@ -62,5 +64,31 @@ public class Intersections extends Actor{
 			getWorld().addObject(trafficLight[i], this.getX() + 50, getY() + roadWidth/2 +
 								trafficLight[i].getImage().getHeight()/2 - 40);
 		}
+	}
+	
+	@Override
+	public void somethingIsApproaching(Car car) {
+		for(IntersectionListener l : listeners){
+			car.nearIntersection(Notify.APPROACHING);
+		}	
+	}
+	
+	@Override
+	public void somethingIsEntering(Car car) {
+		for(IntersectionListener l : listeners){
+			car.nearIntersection(Notify.INSIDE);
+		}
+	}
+	
+	
+	@Override
+	public void somethingIsLeaving(Car car) {
+		for(IntersectionListener l : listeners){
+			car.nearIntersection(Notify.LEAVING);
+		}
+	}
+	
+	public void register(IntersectionListener listener){
+		listeners.add(listener);
 	}
 }
