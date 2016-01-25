@@ -1,0 +1,7 @@
+package exercise1;
+
+public interface Intersection {
+	public void somethingIsApproaching(Car car);
+	public void somethingIsEntering(Car car);
+	public void somethingIsLeaving(Car car);
+}
