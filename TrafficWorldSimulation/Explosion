@@ -1,0 +1,34 @@
+package exercise1;
+
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
+public class Explosion extends Actor{
+	private int explosionCounter = 0;
+	private static final int explosion2 = 100;
+	private static final int explosion3 = 150;
+	private static final int endOfExplosion = 200;
+	private GreenfootImage image = null;
+	private boolean endAct;
+	
+	public Explosion(){
+		image = new GreenfootImage("images\\explosion1.png");
+		this.setImage(image);
+	}
+	
+	public void act(){
+		if(explosionCounter == explosion2){
+			image = new GreenfootImage("images\\explosion2.png");
+			this.setImage(image);
+		}else if(explosionCounter == explosion3){
+			image = new GreenfootImage("images\\explosion3.png");
+			this.setImage(image);
+		}else if(explosionCounter == endOfExplosion){
+			getWorld().removeObject(this);
+			explosionCounter = 0;
+		}
+		
+		explosionCounter++;
+	}
+
+}
