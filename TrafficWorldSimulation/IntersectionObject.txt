@@ -1,0 +1,133 @@
+package exercise1;
+
+import java.awt.Color;
+import java.util.ArrayList;
+
+import greenfoot.Actor;
+import greenfoot.GreenfootImage;
+
+public class IntersectionObject extends Actor{
+	private TrafficLight[] trafficLight = new TrafficLight[4];
+	public int roadWidth = 50;
+	public int radius = 100;
+	public int position1 = 0;
+	public int position2 = 1;
+	public int position3 = 2;
+	public int position4 = 3;
+	private State color;
+	
+	ArrayList <IntersectionListener> previousApproaching = new ArrayList <IntersectionListener>();
+	ArrayList <IntersectionListener> currentApproaching = new ArrayList <IntersectionListener>();
+	ArrayList <IntersectionListener> previousEntering = new ArrayList <IntersectionListener>();
+	ArrayList <IntersectionListener> currentEntering= new ArrayList <IntersectionListener>();
+	
+	public IntersectionObject(){
+		GreenfootImage intersection = new GreenfootImage(roadWidth, roadWidth);
+		intersection.setColor(Color.GRAY);
+		intersection.fill();
+		this.setImage(intersection);
+		
+		createLights();
+	}
+	
+	public void act(){
+		notifyCar();
+	}
+	
+	public void createLights(){
+		for(int i = 0; i < trafficLight.length; i++){
+			if(i == position1 || i == position3){
+				trafficLight[i] = new TrafficLight(State.GREEN);
+			}else{
+				trafficLight[i] = new TrafficLight(State.RED);
+			}
+		}
+	}
+	public void addLights(){
+		for(int i = 0; i < trafficLight.length; i++){
+			checkForRotation(i);
+			checkforLightPlacement(i);
+		}
+	}
+	
+	public void checkForRotation(int i){
+		int num = 0;
+		if(i == position2){
+			num = 90;
+		}
+		else if(i == position3){
+			num = 180;
+		}
+		else if(i == position4){
+			num = 270;
+		}
+		
+		trafficLight[i].setRotation(num);
+	}
+	
+	public void checkforLightPlacement(int i){
+		
+		if(i == position1){
+			getWorld().addObject(trafficLight[i], this.getX(), getY() + roadWidth/2 +
+								trafficLight[i].getImage().getHeight()/2);
+		}
+		else if(i == position2){
+			getWorld().addObject(trafficLight[i], this.getX() - 50, getY() + roadWidth/2 +
+								trafficLight[i].getImage().getHeight()/2 - 40);
+		}
+		else if(i == position3){
+			getWorld().addObject(trafficLight[i], this.getX(), getY() + roadWidth/2 +
+								trafficLight[i].getImage().getHeight()/2 - 85);
+		}
+		else if(i == position4){
+			getWorld().addObject(trafficLight[i], this.getX() + 50, getY() + roadWidth/2 +
+								trafficLight[i].getImage().getHeight()/2 - 40);
+		}
+		
+	}
+	
+	
+	public void notifyCar(){
+		isApproaching();
+		isInside();
+		isLeaving();
+	}
+	
+	public void isApproaching(){
+		currentApproaching = (ArrayList<IntersectionListener>) this.getObjectsInRange(radius, IntersectionListener.class);
+
+		for(IntersectionListener l : currentApproaching){
+			if(!previousApproaching.contains(l)){
+				l.somethingIsApproaching(this);
+			}
+		}
+		previousApproaching = currentApproaching;
+	}
+	
+	
+	public void isInside(){
+		currentEntering = (ArrayList<IntersectionListener>) this.getIntersectingObjects(IntersectionListener.class);
+		
+		for(IntersectionListener l : currentEntering){
+			if(!previousEntering.contains(l)){
+				l.somethingIsEntering(this);
+			}
+		}
+		
+		previousEntering = currentEntering;
+	}
+	
+	public void isLeaving(){
+		for(IntersectionListener l : previousApproaching){
+			if(!previousEntering.contains(l)){
+				l.somethingIsLeaving(this);
+			}
+		}
+	}
+	
+	public State lightReturn(int num){
+		color = trafficLight[num].getColor();
+		return color;
+		
+	}
+}
