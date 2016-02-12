@@ -10,31 +10,88 @@ public class Car extends Actor implements IntersectionListener{
 								"images\\topCarRed.png", "images\\topCarYellow.png"};
 	Random romanoff = new Random();
 	private Direction direction;
+	private Notify notifier = Notify.APPROACHING;
+	private IntersectionObject intersection;
+	private int position;
+	private State light;
+	private boolean atEdge;
+	private int rotation;
+	private int countDown;
+	private int roadWidth = 75; 
+	private boolean turn;
 	
-	public Car(int num){
+	
+	public Car(){
 		GreenfootImage image = null;
-		num = romanoff.nextInt(4);
+		int num = romanoff.nextInt(4);
 		
 		image = new GreenfootImage(carImages[num]);
 		this.setImage(image);
 	}
 	
 	public void act(){
-		move(1);
+		checkNotifier();
+		checkIfAtEdge();
+		countDown++;
+		
+		if(countDown == 10){
+			decideToTurn();
+		}
+		
+		if(this.getOneIntersectingObject(Car.class) != null){
+			try{
+				throw new Throwable("Cars have collided.");
+			}catch(Throwable e){
+				Explosion explode = new Explosion();
+				getWorld().addObject(explode, this.getX(), this.getY());
+				removeTouching(Car.class);
+				getWorld().removeObject(this);
+			}
+		}
+		
+	}
+	
+	public void checkIfAtEdge(){
 		if(isAtEdge()){
-			if(getX() >= TrafficWorld.WIDTH-1){
-				setLocation(0, getY());
+			atEdge = true;
+		}else{
+			atEdge = false;
+		}
+	}
+	
+	public void checkNotifier(){
+		
+		switch(notifier){
+		case APPROACHING:
+		case INSIDE:
+			if(direction == Direction.NORTH){
+				position = 0;
+			}else if(direction == Direction.EAST){
+				position = 1;
+			}else if(direction == Direction.SOUTH){
+				position = 2;
+			}else if(direction == Direction.WEST){
+				position = 3;
 			}
-			else if(getX() <= 0){
-				setLocation(TrafficWorld.WIDTH, getY());
-			}
-			else if(getY() >= (TrafficWorld.HEIGHT-1)){
-				setLocation(getX(), 0);
-			}
-			else if(getY() <= 0){
-				setLocation(getX(), TrafficWorld.HEIGHT);
-			}
-				
+			light = intersection.lightReturn(position);
+			checkLight();
+			break;
+		case LEAVING:
+			move(1);
+			break;
+		}
+	}
+	
+	public void checkLight(){
+		switch(light){
+		case YELLOW:
+			move(5);
+			break;
+		case RED:
+			move(0);
+			break;
+		default:
+			move(1);
 		}
 		
 	}
@@ -46,10 +103,147 @@ public class Car extends Actor implements IntersectionListener{
 	public Direction getDirection(){
 		return direction;
 	}
-
+	
 	@Override
-	public Notify nearIntersection(Notify notifier) {
-		return notifier;
+	public void somethingIsApproaching(IntersectionObject intersection) {
+		notifier = Notify.APPROACHING;
+		this.intersection = intersection;
 	}
 
+	@Override
+	public void somethingIsEntering(IntersectionObject intersection) {
+		notifier = Notify.INSIDE;
+		this.intersection = intersection;
+	}
+
+	@Override
+	public void somethingIsLeaving(IntersectionObject intersection) {
+		notifier = Notify.LEAVING;
+		this.intersection = intersection;
+	}
+	
+	public boolean getAtEdge(){
+		return atEdge;
+	}
+
+	public void decideToTurn(){
+		resetRotation();
+			
+		if(direction == Direction.EAST){
+			checkInsideForRotation();
+			if(turn){
+				eastTurn();
+			}
+		}else if(direction == Direction.WEST){
+			checkInsideForRotation();
+			if(turn){
+				westTurn();
+			}
+		}else if(direction == Direction.NORTH){
+			checkInsideForRotation();
+			if(turn){
+				northTurn();
+			}
+		}else if(direction == Direction.SOUTH){
+			checkInsideForRotation();
+			if(turn){
+				southTurn();
+			}
+		}
+	}
+	
+	
+	
+	public void resetRotation(){
+		int num = romanoff.nextInt(3) + 1;
+		
+		switch(num){
+		case 1:
+			rotation = 90;
+			break;
+		case 2:
+			rotation = 270;
+			break;
+		case 3:
+			rotation = 360;
+			break;
+		}
+	}
+	
+	public void checkInsideForRotation(){
+		if(notifier == Notify.INSIDE && light != State.RED){
+			turn = true;
+			setRotation(rotation);
+		}else{
+			turn = false;
+		}
+		
+		checkNotifier();
+	}
+	
+	public void eastTurn(){
+		switch(rotation){
+		case 90:
+			setDirection(Direction.NORTH);
+			setLocation(intersection.getX() - 15, intersection.getY());
+			break;
+		case 270:
+			setDirection(Direction.SOUTH);
+		case 360:
+			setDirection(Direction.WEST);
+			setLocation(intersection.getX()+20, intersection.getY()+20);
+			break;
+		}
+	}
+	
+	public void westTurn(){
+		switch(rotation){
+		case 90:
+			setDirection(Direction.SOUTH);
+			setLocation(intersection.getX() - 15, intersection.getY());
+			break;
+		case 270:
+			setDirection(Direction.NORTH);
+			setLocation(intersection.getX() + 15, intersection.getY());
+			break;
+		case 360:
+			setDirection(Direction.EAST);
+			setLocation(intersection.getX() + 20, intersection.getY()-20);
+			break;
+		}
+	}
+	
+	public void northTurn(){
+		switch(rotation){
+		case 90:
+			setDirection(Direction.WEST);
+			setLocation(intersection.getX()+20, intersection.getY()+20);
+			break;
+		case 270:
+			setDirection(Direction.EAST);
+			setLocation(intersection.getX() + 20, intersection.getY()-20);
+			break;
+		case 360:
+			setDirection(Direction.SOUTH);
+			setLocation(intersection.getX() - 15, intersection.getY());
+			break;
+		}
+	}
+	
+	public void southTurn(){
+		switch(rotation){
+		case 90:
+			setDirection(Direction.EAST);
+			setLocation(intersection.getX() + 20, intersection.getY()-20);
+			break;
+		case 270:
+			setDirection(Direction.WEST);
+			setLocation(intersection.getX()+20, intersection.getY()+20);
+			break;
+		case 360:
+			setDirection(Direction.NORTH);
+			setLocation(intersection.getX() + 15, intersection.getY());
+			break;
+		}
+	}
 }
