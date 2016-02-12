@@ -1,5 +1,7 @@
 package exercise1;
 
 public interface IntersectionListener {
-	public Notify nearIntersection(Notify notifier);
+	public void somethingIsApproaching(IntersectionObject intersection);
+	public void somethingIsEntering(IntersectionObject intersection);
+	public void somethingIsLeaving(IntersectionObject intersection);
 }
