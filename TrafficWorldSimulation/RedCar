@@ -1,0 +1,15 @@
+package exercise1;
+
+import greenfoot.GreenfootImage;
+
+public class RedCar extends CarBuilder{
+
+	public RedCar(GreenfootImage img, boolean turn, boolean wrap, boolean leaves) {
+		super(img, turn, wrap, leaves);
+	}
+
+	@Override
+	public int turn(Notify notifier, State light, Direction direction) {
+		return 0;
+	}
+}
