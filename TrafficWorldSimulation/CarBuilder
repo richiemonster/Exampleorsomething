@@ -1,0 +1,32 @@
+package exercise1;
+
+import greenfoot.GreenfootImage;
+
+public abstract class CarBuilder {
+	
+	protected GreenfootImage color;
+	protected boolean turn;
+	protected boolean wrap;
+	protected boolean leaves;
+	
+	public CarBuilder(GreenfootImage img, boolean turn, boolean wrap, boolean leaves){
+		color = img;
+		this.turn = turn;
+		this.wrap = wrap;
+		this.leaves = leaves;
+	}
+	
+	public boolean getTurn(){
+		return turn;
+	}
+	
+	public boolean getWrap(){
+		return wrap;
+	}
+
+	public boolean getLeaves(){
+		return leaves;
+	}
+	
+	public abstract int turn(Notify notifier, State light, Direction direction);
+}
