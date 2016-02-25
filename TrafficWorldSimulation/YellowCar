@@ -1,0 +1,24 @@
+package exercise1;
+
+import java.util.Random;
+
+import greenfoot.GreenfootImage;
+
+public class YellowCar extends CarBuilder{
+	private int percentage;
+	private int rotation;
+	Random romanoff = new Random();
+
+	public YellowCar(GreenfootImage img, boolean turn, boolean wrap, boolean leaves) {
+		super(img, turn, wrap, leaves);
+	}
+	
+	@Override
+	public int turn(Notify notifier, State light, Direction direction) {
+		percentage = romanoff.nextInt(100) + 1;
+		if(percentage == 1){
+			rotation = 90;
+		}
+		return rotation;
+	}
+}
